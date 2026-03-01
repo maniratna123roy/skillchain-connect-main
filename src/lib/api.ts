@@ -96,3 +96,21 @@ export async function matchResume(formData: FormData, wallet: string) {
 
   return response.json();
 }
+
+export async function zkDelete(asset_id: number, proof: any, publicSignals: any, wallet: string) {
+  const response = await fetch(`${API_URL}/api/integration/zk-delete`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-wallet-address': wallet,
+    },
+    body: JSON.stringify({ asset_id, proof, publicSignals }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'ZK Deletion failed');
+  }
+
+  return response.json();
+}

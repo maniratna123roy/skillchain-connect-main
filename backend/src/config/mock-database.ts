@@ -20,6 +20,7 @@ interface Credential {
   metadata_hash: string;
   issued_tx_hash: string;
   created_at: string;
+  revoked?: boolean;
 }
 
 class MockDatabase {
@@ -38,13 +39,38 @@ class MockDatabase {
   }
 
   async getCredentialRequestsByWallet(wallet: string) {
-    const requests = this.credentialRequests
-      .filter(r => r.student_wallet === wallet)
-      .map(r => ({
-        ...r,
-        credentials: this.credentials.filter(c => c.credential_request_id === r.id)
-      }));
-    return { data: requests, error: null };
+    const requests = this.credentialRequests.filter(r => r.student_wallet === wallet);
+
+    // Attach minted credentials where available
+    const requestsWithCredentials = requests.map(req => {
+      const creds = this.credentials.filter(c => c.credential_request_id === req.id);
+      return { ...req, credentials: creds };
+    });
+
+    // Filter out revoked credentials so they no longer show in history
+    const activeRequests = requestsWithCredentials.filter(req => {
+      if (req.credentials && req.credentials.length > 0) {
+        return !req.credentials[0].revoked;
+      }
+      return true;
+    });
+
+    return { data: activeRequests, error: null };
+  }
+
+  async getCredentialByAssetId(asset_id: number) {
+    const credential = this.credentials.find(c => c.nft_asset_id === asset_id);
+    if (!credential) return { data: null, error: { message: 'Credential not found' } };
+    return { data: credential, error: null };
+  }
+
+  async revokeCredential(asset_id: number) {
+    const credential = this.credentials.find(c => c.nft_asset_id === asset_id);
+    if (!credential) return { error: { message: 'Credential not found' } };
+    if (credential.revoked) return { error: { message: 'Credential already revoked' } };
+
+    credential.revoked = true;
+    return { data: credential, error: null };
   }
 
   async getPendingRequests() {
