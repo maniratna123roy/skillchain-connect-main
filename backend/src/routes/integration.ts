@@ -158,8 +158,11 @@ router.post('/zk-delete', async (req, res) => {
   try {
     const { asset_id, proof, publicSignals } = req.body;
 
-    if (!asset_id || !proof || !publicSignals) {
-      return res.status(400).json({ error: 'asset_id, proof, and publicSignals are required fields.' });
+    if (asset_id === undefined || !proof || !publicSignals) {
+      return res.status(400).json({
+        error: 'asset_id, proof, and publicSignals are required fields.',
+        receivedBody: req.body // Helps debugging Postman payload errors
+      });
     }
 
     const { data: credential, error: credError } = await mockDb.getCredentialByAssetId(asset_id);
