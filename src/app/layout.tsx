@@ -6,7 +6,7 @@ import { Providers } from '@/components/Providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CredChain - Decentralized Credential Issuer',
+  title: 'AlgoVault - Decentralized Credential Issuer',
   description: 'Issue and verify academic credentials on Algorand blockchain',
 };
 
