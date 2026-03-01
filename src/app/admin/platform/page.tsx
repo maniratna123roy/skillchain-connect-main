@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WalletConnect } from '@/components/WalletConnect';
 import { getContractAdmins } from '@/lib/api';
 import { Shield, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 
 export default function PlatformAdminPage() {
   const { activeAccount } = useWalletContext();
@@ -32,12 +33,12 @@ export default function PlatformAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="border-b bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-gray-50 pt-32">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
+        <div className="bg-white/60 backdrop-blur-md border border-gray-200 px-8 py-3 rounded-full flex justify-between items-center shadow-lg">
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-blue-600" />
-            <span className="text-xl font-bold">CredChain - Platform Admin</span>
+            <Image src="/logo-navbar.png?v=1" alt="AlgoVault Logo" width={180} height={45} className="object-contain" />
+            <span className="text-xs font-bold text-zinc-500 bg-zinc-100 px-2 py-1 rounded ml-2">Platform Admin</span>
           </div>
           <WalletConnect />
         </div>

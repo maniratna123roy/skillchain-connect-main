@@ -16,6 +16,7 @@ import { Shield, Upload, CheckCircle, XCircle, Clock, ExternalLink, Gift, Sparkl
 import algosdk from 'algosdk';
 import { Ripple } from '@/components/ui/ripple';
 import NeoButton from '@/components/ui/NeoButton';
+import Image from 'next/image';
 
 // Algorand testnet node for sending opt-in transactions
 const algodClient = new algosdk.Algodv2(
@@ -160,15 +161,10 @@ export default function StudentPage() {
   return (
     <div className="relative min-h-screen flex flex-col bg-black text-white overflow-x-hidden">
       <Ripple />
-      <nav className="absolute top-0 left-0 w-full z-50 border-b border-white/10 bg-transparent">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
+        <div className="bg-black/60 backdrop-blur-md border border-white/20 px-8 py-3 rounded-full flex justify-between items-center shadow-2xl">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-xl text-white">
-              <Shield className="h-7 w-7" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              CredChain
-            </span>
+            <Image src="/logo-navbar.png?v=1" alt="AlgoVault Logo" width={180} height={45} className="object-contain" />
             <span className="text-xs font-black uppercase tracking-widest text-zinc-500 bg-zinc-800/50 px-2 py-1 rounded ml-2">
               Student
             </span>
@@ -193,7 +189,7 @@ export default function StudentPage() {
         </div>
       </nav>
 
-      <main className="relative z-10 container mx-auto px-4 pt-32 pb-8">
+      <main className="relative z-10 container mx-auto px-4 pt-40 pb-8 focus:outline-none">
         {/* Pending Claims Banner */}
         {pendingClaims?.data?.length > 0 && (
           <Card className="mb-12 border-4 border-amber-500/50 bg-zinc-900 shadow-[10px_10px_0px_0px_rgba(245,158,11,0.1)] transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[15px_15px_0px_0px_#f59e0b] hover:border-amber-500">
