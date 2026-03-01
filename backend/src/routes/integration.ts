@@ -23,9 +23,9 @@ router.get('/verify/:wallet', async (req, res) => {
 
     // Filter only APPROVED credentials with valid NFT data
     const verifiedCredentials = requests
-      ?.filter(r => 
-        r.status === 'APPROVED' && 
-        r.credentials && 
+      ?.filter(r =>
+        r.status === 'APPROVED' &&
+        r.credentials &&
         r.credentials.length > 0 &&
         r.credentials[0].nft_asset_id &&
         r.credentials[0].issued_tx_hash

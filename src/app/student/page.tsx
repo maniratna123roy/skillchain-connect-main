@@ -11,11 +11,11 @@ import { Label } from '@/components/ui/label';
 import { WalletConnect } from '@/components/WalletConnect';
 import { uploadCredential, getMyRequests, getPendingClaims, claimCredential, matchResume } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Upload, CheckCircle, XCircle, Clock, ExternalLink, Gift, ArrowRight } from 'lucide-react';
-import { Shield, Upload, CheckCircle, XCircle, Clock, ExternalLink, Gift, Sparkles, UserPlus } from 'lucide-react';
+import { Shield, Upload, CheckCircle, XCircle, Clock, ExternalLink, Gift, ArrowRight, Sparkles, UserPlus, Fingerprint, FileText } from 'lucide-react';
 import algosdk from 'algosdk';
 import { Ripple } from '@/components/ui/ripple';
 import NeoButton from '@/components/ui/NeoButton';
+import { QRCodeSVG } from 'qrcode.react';
 
 // Algorand testnet node for sending opt-in transactions
 const algodClient = new algosdk.Algodv2(
@@ -400,6 +400,28 @@ export default function StudentPage() {
                                 )}
                               </div>
 
+                              {/* Original Document Details */}
+                              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
+                                <div className="flex items-center gap-2 text-zinc-400 font-bold text-sm uppercase tracking-wider mb-2">
+                                  <FileText className="h-4 w-4" />
+                                  Original Document
+                                </div>
+                                <div className="space-y-4 text-xs">
+                                  <div className="space-y-1">
+                                    <p className="text-zinc-500 uppercase font-black tracking-widest text-[10px]">SHA-256 Hash</p>
+                                    <p className="font-mono text-zinc-300 break-all bg-black p-2 rounded-lg border border-zinc-800">{req.document_hash}</p>
+                                  </div>
+                                  <a
+                                    href={`https://ipfs.io/ipfs/${req.document_ipfs_cid}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold uppercase tracking-widest text-[10px] bg-blue-500/10 px-3 py-2 rounded-lg transition-colors w-full justify-center"
+                                  >
+                                    View Original Certificate <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                </div>
+                              </div>
+
                               <div className="flex gap-3">
                                 <a
                                   href={`https://lora.algokit.io/testnet/asset/${req.credentials[0].nft_asset_id}`}
@@ -420,6 +442,26 @@ export default function StudentPage() {
                                   </a>
                                 )}
                               </div>
+
+                              {/* QR Code Validation block */}
+                              {req.status === 'APPROVED' && (
+                                <div className="flex flex-col items-center justify-center bg-zinc-900 border-2 border-zinc-800 p-4 rounded-xl shadow-inner aspect-square relative group">
+                                  <div className="flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                                    <div className="bg-white p-3 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.3)] border-2 border-green-500">
+                                      <QRCodeSVG
+                                        value={`https://ipfs.io/ipfs/${req.document_ipfs_cid}`}
+                                        size={140}
+                                        bgColor={"#ffffff"}
+                                        fgColor={"#000000"}
+                                        level={"H"}
+                                      />
+                                    </div>
+                                    <p className="text-green-500 font-black uppercase text-[9px] tracking-widest mt-4 flex items-center gap-1">
+                                      <CheckCircle className="w-3 h-3" /> Ready for Scanner
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -433,84 +475,116 @@ export default function StudentPage() {
         </div>
 
         {/* AI Mentor Matcher Section */}
-        <div className="mt-12">
-          <div className="mb-6">
-            <h2 className="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
-              <Sparkles className="h-8 w-8 text-indigo-600" />
+        <div className="mt-12 mb-20 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both relative">
+          <div className="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
+
+          <div className="mb-8 relative">
+            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 flex items-center gap-3 tracking-tight">
+              <Sparkles className="h-8 w-8 text-blue-500" />
               AI Mentor Matcher
             </h2>
-            <p className="text-gray-600 mt-2">Upload your resume and let our Gemini AI find the perfect alumni mentors based on your skills and background.</p>
+            <p className="text-zinc-400 mt-2 font-medium">Upload your resume and let our Gemini AI find the perfect alumni mentors based on your skills and background.</p>
           </div>
 
-          <Card className="border-2 border-indigo-100 shadow-lg">
-            <CardContent className="p-6">
-              <div className="grid lg:grid-cols-3 gap-8">
+          <Card className="bg-zinc-900/40 border-zinc-800/50 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <CardContent className="p-8">
+              <div className="grid lg:grid-cols-3 gap-10">
                 {/* Upload Section */}
-                <div className="col-span-1 space-y-4 lg:border-r border-gray-100 pr-4">
-                  <h3 className="text-xl font-bold text-gray-800">1. Upload Resume</h3>
-                  <p className="text-sm text-gray-500">Must be a PDF document containing your work experience and skills.</p>
+                <div className="col-span-1 border-b lg:border-b-0 lg:border-r border-zinc-800/50 pb-8 lg:pb-0 lg:pr-8 flex flex-col justify-center">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-xl font-bold font-mono tracking-tight text-white mb-2 flex items-center gap-2">
+                        <span className="text-blue-500 font-black">01 //</span> Upload Resume
+                      </h3>
+                      <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Must be a PDF document containing your work experience and skills.</p>
+                    </div>
 
-                  <div className="mt-4">
-                    <Label htmlFor="resumeDocument" className="sr-only">Resume (PDF)</Label>
-                    <Input
-                      id="resumeDocument"
-                      type="file"
-                      accept=".pdf"
-                      onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
-                      className="cursor-pointer"
-                    />
+                    <div className="group relative">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-20 transition duration-500 blur"></div>
+                      <div className="relative bg-zinc-950/50 border border-zinc-800 rounded-xl p-6 transition-all group-hover:border-zinc-700 flex flex-col items-center justify-center gap-4 text-center cursor-pointer h-40">
+                        <Label htmlFor="resumeDocument" className="cursor-pointer inset-0 absolute flex flex-col items-center justify-center opacity-0 z-10">Upload Resume</Label>
+                        <FileText className="h-8 w-8 text-zinc-600 group-hover:text-blue-400 transition-colors" />
+                        <span className="text-zinc-400 font-medium text-sm">
+                          {resumeFile ? resumeFile.name : "Click to select or drag PDF here"}
+                        </span>
+                        <Input
+                          id="resumeDocument"
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                          className="opacity-0 absolute inset-0 cursor-pointer z-20"
+                        />
+                      </div>
+                    </div>
+
+                    <NeoButton
+                      className="w-full"
+                      hoverText="Initialize AI Scan"
+                      disabled={!resumeFile || matchMutation.isPending}
+                      onClick={() => matchMutation.mutate()}
+                    >
+                      {matchMutation.isPending ? 'Analyzing with AI...' : 'Find Matches'}
+                    </NeoButton>
                   </div>
-
-                  <Button
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 mt-4"
-                    onClick={() => matchMutation.mutate()}
-                    disabled={!resumeFile || matchMutation.isPending}
-                  >
-                    {matchMutation.isPending ? 'Analyzing with AI...' : 'Find Matches'}
-                  </Button>
                 </div>
 
                 {/* Results Section */}
                 <div className="col-span-2">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">2. Your AI Matches</h3>
+                  <h3 className="text-xl font-bold font-mono tracking-tight text-white mb-6 flex items-center gap-2">
+                    <span className="text-blue-500 font-black">02 //</span> Your AI Matches
+                  </h3>
 
                   {!matches || matches.length === 0 ? (
-                    <div className="h-40 flex items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                      <p className="text-gray-500 text-center">
-                        {matchMutation.isPending ? 'Gemini AI is reading your resume...' : 'Upload your resume to see your top matches.'}
-                      </p>
+                    <div className="h-full min-h-[250px] flex flex-col items-center justify-center bg-zinc-950/50 rounded-2xl border border-dashed border-zinc-800/50 pattern-grid-zinc-900/50 p-8 text-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
+                      {matchMutation.isPending ? (
+                        <div className="space-y-4 flex flex-col items-center">
+                          <div className="relative w-16 h-16 flex items-center justify-center">
+                            <div className="absolute inset-0 border-t-2 border-blue-500 rounded-full animate-spin"></div>
+                            <Sparkles className="h-6 w-6 text-blue-400 animate-pulse" />
+                          </div>
+                          <p className="text-blue-400 font-mono text-sm tracking-widest uppercase animate-pulse">Gemini AI is scanning...</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <UserPlus className="h-10 w-10 text-zinc-700 mx-auto" />
+                          <p className="text-zinc-500 font-medium max-w-sm">Upload your resume to see your top matches.</p>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-4">
                       {matches.map((match: any, idx: number) => (
-                        <div key={idx} className="bg-white p-5 rounded-xl border border-indigo-100 shadow-sm hover:shadow-md transition-shadow">
-                          <div className="flex justify-between items-start mb-2">
+                        <div key={idx} className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl hover:border-zinc-700 transition-colors relative overflow-hidden group">
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-indigo-500 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+
+                          <div className="flex justify-between items-start mb-4">
                             <div>
-                              <h4 className="font-bold text-lg text-gray-900">{match.alumnus?.name}</h4>
-                              <p className="text-sm font-medium text-indigo-600">{match.alumnus?.status}</p>
+                              <h4 className="font-bold text-xl text-white tracking-tight">{match.alumnus?.name}</h4>
+                              <p className="text-xs uppercase tracking-widest font-black text-blue-400 mt-1">{match.alumnus?.status}</p>
                             </div>
-                            <div className="flex flex-col items-end gap-2">
+                            <div className="flex flex-col items-end gap-3">
                               {match.matchPercentage && (
-                                <div className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full border border-green-200">
+                                <div className="bg-green-500/10 text-green-400 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.1)]">
                                   {match.matchPercentage}% Match
                                 </div>
                               )}
-                              <Button size="sm" variant="outline" className="gap-1 text-indigo-700 border-indigo-200 hover:bg-indigo-50">
-                                <UserPlus className="h-4 w-4" /> Connect
-                              </Button>
+                              <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white bg-zinc-800 hover:bg-white hover:text-black py-2 px-4 rounded-lg transition-colors">
+                                <UserPlus className="h-3 w-3" /> Connect
+                              </button>
                             </div>
                           </div>
 
-                          <div className="bg-indigo-50/50 p-3 rounded-lg mt-3">
-                            <p className="text-sm text-gray-800 flex items-start gap-2">
-                              <Sparkles className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                              <span className="italic">{match.reason}</span>
+                          <div className="bg-black/50 p-4 rounded-xl border border-zinc-800 mt-4 relative">
+                            <Sparkles className="h-4 w-4 text-zinc-600 absolute top-4 left-4" />
+                            <p className="text-sm text-zinc-400 font-medium pl-6 leading-relaxed">
+                              {match.reason}
                             </p>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 mt-4">
+                          <div className="flex flex-wrap gap-2 mt-5">
                             {match.alumnus?.expertise.map((skill: string, sIdx: number) => (
-                              <span key={sIdx} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
+                              <span key={sIdx} className="bg-zinc-800/80 text-zinc-300 border border-zinc-700 text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 rounded-lg">
                                 {skill}
                               </span>
                             ))}
